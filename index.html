@@ -1,0 +1,332 @@
+<title>LEAP-1A Guide Quiz</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one centred job-card column; a sticky progress strip; question card with lettered choice rows; results sheet at the end. */
+:root{
+  --bg:#eef1f3; --paper:#ffffff; --ink:#13242f; --muted:#5b6b76; --line:#d5dde2;
+  --accent:#1d5a80; --accent-soft:#e2edf4; --ok:#1d7a4c; --ok-soft:#e3f3ea; --bad:#b23a2e; --bad-soft:#f8e6e3;
+  --chip:#f4f7f8;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f171d; --paper:#16222b; --ink:#e3ebf0; --muted:#93a4af; --line:#2a3a45;
+  --accent:#6fb1dc; --accent-soft:#1b3242; --ok:#5cc792; --ok-soft:#163327; --bad:#ef8a7e; --bad-soft:#3a1f1c; --chip:#1b2a34;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f171d; --paper:#16222b; --ink:#e3ebf0; --muted:#93a4af; --line:#2a3a45;
+  --accent:#6fb1dc; --accent-soft:#1b3242; --ok:#5cc792; --ok-soft:#163327; --bad:#ef8a7e; --bad-soft:#3a1f1c; --chip:#1b2a34;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,5vw,34px);line-height:1.1;margin:0;text-wrap:balance}
+.sub{color:var(--muted);margin:0;max-width:62ch}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.label{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:13.5px;border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.chip .n{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.chip[aria-pressed="true"] .n{color:inherit;opacity:.8}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.toggle{display:inline-flex;gap:8px;align-items:center;font-size:14px;color:var(--muted);cursor:pointer}
+.toggle input{accent-color:var(--accent);width:16px;height:16px}
+.btn{font:inherit;font-weight:600;font-size:14px;border-radius:5px;padding:9px 16px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--paper)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:focus-visible,.chip:focus-visible,.opt:focus-visible,.dot:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.strip{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;display:flex;flex-direction:column;gap:6px}
+.stats{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stats b{color:var(--ink);font-weight:500}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;display:flex}
+.bar span{display:block;height:100%}
+.bar .g{background:var(--ok)} .bar .r{background:var(--bad)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.card-head{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.04em}
+.tag{text-transform:uppercase;letter-spacing:.07em}
+.card-body{padding:18px 16px 16px;display:flex;flex-direction:column;gap:14px}
+.qtext{font-family:var(--f-display);font-weight:600;font-size:clamp(18px,3.4vw,21px);line-height:1.3;margin:0;text-wrap:balance}
+.opts{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.opt{width:100%;text-align:left;font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:5px;padding:11px 12px;display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-soft)}
+.opt .k{font-family:var(--f-mono);font-weight:500;font-size:13px;width:26px;height:26px;border-radius:4px;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted)}
+.opt .t{min-width:0}
+.opt .m{font-family:var(--f-mono);font-size:12px;font-weight:500}
+.opt:disabled{cursor:default}
+.opt.correct{border-color:var(--ok);background:var(--ok-soft)}
+.opt.correct .k{border-color:var(--ok);color:var(--ok)}
+.opt.correct .m{color:var(--ok)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .k{border-color:var(--bad);color:var(--bad)}
+.opt.wrong .m{color:var(--bad)}
+.opt.dim{opacity:.6}
+.explain{border-top:1px dashed var(--line);padding-top:12px;display:flex;flex-direction:column;gap:6px}
+.verdict{font-weight:600}
+.verdict.ok{color:var(--ok)} .verdict.bad{color:var(--bad)}
+.explain p{margin:0;max-width:68ch}
+.ref{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.nav{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.hint{font-size:12.5px;color:var(--muted)}
+kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:3px;padding:0 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(30px,1fr));gap:5px}
+.dot{font:inherit;font-family:var(--f-mono);font-size:11px;height:28px;border-radius:4px;border:1px solid var(--line);background:var(--chip);color:var(--muted);cursor:pointer;font-variant-numeric:tabular-nums;padding:0}
+.dot.cur{border-color:var(--accent);color:var(--accent);font-weight:500}
+.dot.g{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.dot.r{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.score{font-family:var(--f-display);font-weight:700;font-size:clamp(40px,9vw,56px);line-height:1;margin:0;font-variant-numeric:tabular-nums}
+.score small{font-size:.4em;color:var(--muted);font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+td.num,th.num{text-align:right}
+.missed{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.missed li{border:1px solid var(--line);border-radius:5px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.missed .qq{font-weight:600}
+.missed .yours{color:var(--bad);font-size:14px}
+.missed .right{color:var(--ok);font-size:14px}
+@media (prefers-reduced-motion:no-preference){.opt,.chip,.dot{transition:background-color .12s,border-color .12s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">LEAP-1A Maintenance Guide · Rev 04 · July 2026</div>
+    <h1>LEAP-1A Guide Quiz</h1>
+    <p class="sub">100 questions covering shop visit definitions, workscope levels, LLPs, example workscopes, SB categories, key maintenance tasks and C&amp;A levels. Choices are shuffled every time and written to the same length and style, so you have to know the answer.</p>
+  </header>
+
+  <section class="panel" id="setup" aria-label="Quiz setup">
+    <div class="label">Sections</div>
+    <div class="chips" id="chips"></div>
+    <div class="row">
+      <label class="toggle" for="shuffleQ"><input type="checkbox" id="shuffleQ" checked> Shuffle question order</label>
+      <button class="btn" id="startBtn" type="button">Start quiz</button>
+    </div>
+  </section>
+
+  <div class="strip" id="strip" hidden>
+    <div class="stats"><span>Question <b id="sNum">1</b> / <b id="sTot">100</b></span><span>Correct <b id="sOk">0</b> · Wrong <b id="sBad">0</b> · <b id="sPct">–</b></span></div>
+    <div class="bar" aria-hidden="true"><span class="g" id="barG" style="width:0"></span><span class="r" id="barR" style="width:0"></span></div>
+  </div>
+
+  <article class="card" id="quiz" hidden>
+    <div class="card-head"><span class="tag" id="qTag"></span><span id="qId"></span></div>
+    <div class="card-body">
+      <p class="qtext" id="qText"></p>
+      <ul class="opts" id="opts"></ul>
+      <div class="explain" id="explain" hidden>
+        <div class="verdict" id="verdict"></div>
+        <p id="expText"></p>
+        <div class="ref" id="ref"></div>
+      </div>
+      <div class="nav">
+        <button class="btn ghost" id="prevBtn" type="button">Previous</button>
+        <span class="hint"><kbd>1</kbd>–<kbd>4</kbd> to answer · <kbd>Enter</kbd> for next</span>
+        <button class="btn" id="nextBtn" type="button">Next</button>
+      </div>
+    </div>
+  </article>
+
+  <section class="panel" id="navPanel" hidden aria-label="Jump to question">
+    <div class="row"><span class="label">Jump to question</span><button class="btn ghost" id="finishBtn" type="button">Finish and see results</button></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="panel" id="results" hidden aria-label="Results">
+    <div class="label">Result</div>
+    <p class="score" id="score"></p>
+    <div style="overflow-x:auto"><table id="secTable"></table></div>
+    <div class="row">
+      <button class="btn" id="retryMissed" type="button">Retry missed questions</button>
+      <button class="btn ghost" id="restartBtn" type="button">New quiz</button>
+    </div>
+    <div class="label" id="missedLabel">Missed questions</div>
+    <ul class="missed" id="missed"></ul>
+  </section>
+</div>
+
+<script>
+const QUESTIONS = [{"s": "General", "p": 10, "q": "In the guide's abbreviation list, how is DOD defined?", "o": ["Damage originating from an internal engine failure", "Damage from material originating outside the engine", "Damage found during a dedicated on-wing inspection", "Damage observed on a disk, hub or spool at overhaul"], "e": "DOD = Domestic Object Damage, damage originating as a result of an internal engine failure. FOD is the one from material outside the engine."}, {"s": "General", "p": 11, "q": "Which ESM section defines the LEAP-1A Mandatory Inspections?", "o": ["ESM 05-21", "ESM 05-11", "ESM 05-12", "ESM 05-31"], "e": "Airworthiness Limitations: 05-11/12/21 are Life Limits and 05-21 is Mandatory Inspections."}, {"s": "General", "p": 11, "q": "What does the term 'Engine Build Standard' mean in this guide?", "o": ["The time on wing the shop visit is expected to yield", "The configuration data recorded at engine delivery", "The shortest remaining life among installed LLPs", "The minimum cycles remaining at a proposed shop visit"], "e": "Engine Build Standard is the TOW (hours and cycles) the shop visit is anticipated to yield, based on LLP life, module workscope, EGT deterioration rate, etc. The other options define EDS, stub life and minimum stub life."}, {"s": "General", "p": 11, "q": "What is the Engine Data Submittal (EDS) used for?", "o": ["Establishing the configuration data of the delivered engine", "Recording the inbound test cell performance margin", "Listing the SBs agreed with the customer at contract", "Defining the minimum build stub life for the next visit"], "e": "All new production engines are delivered with an EDS, provided by the Customer Web Center, used to establish configuration data for the delivered engine."}, {"s": "General", "p": 11, "q": "Which event is NOT listed as an example that could lead to an engine exceedance?", "o": ["Hard landing with nacelle contact", "Metal contamination of the oil system", "Exposure to fire extinguishing agent", "Volcanic ash ingestion in service"], "e": "Hard landing with nacelle contact appears under Abnormal Exposure, not in the engine-exceedance examples (stall, FOD/DOD, oil pressure loss, overspeed, overtemp, EGT exceedance, volcanic ash, high vibration, metal in oil, fire/extinguishing agents)."}, {"s": "General", "p": 11, "q": "According to the guide, what is required to mandate a change to the Chapter 05 Airworthiness Limitation section?", "o": ["Adoption of an Airworthiness Directive", "Release of a Category 1 Service Bulletin", "A revision to the operator's MPD tasks", "Approval from CFM Product Support Engineering"], "e": "Hard time: the Chapter 05-11/12/21 Airworthiness Limitation section for LLPs requires the adoption of an AD to mandate the change."}, {"s": "General", "p": 12, "q": "What does the acronym LEAP stand for?", "o": ["Leading Edge Aviation Propulsion", "Low Emission Advanced Propulsion", "Lightweight Efficient Airbus Powerplant", "Leading Efficiency Aero Propulsion"], "e": "LEAP = Leading Edge Aviation Propulsion, the basic identifier for new-generation engines built by CFM."}, {"s": "General", "p": 12, "q": "After the ESN block 599-101 to 599-999 is used up, which LEAP-1A ESN comes next?", "o": ["59A-101", "600-101", "5A0-101", "598-A01"], "e": "Rev 04 ESN sequence update: 598- then 599- then 59A-, 59B-, 59C- and onward alphanumerically."}, {"s": "General", "p": 13, "q": "When must the Chapter 5-21 mandatory inspections be applied to an LLP?", "o": ["When the LLP is exposed at piece part during an overhaul workscope", "At every shop visit whether or not the LLP is physically exposed", "Only when the LLP stub life falls below the minimum build value", "When the parent module is inspected to Level A check inspection"], "e": "These inspections shall be applied when the LLP is exposed at piece part during an overhaul workscope (and at module level if the module inspection specifies them)."}, {"s": "General", "p": 13, "q": "Which item is NOT among the on-condition assessment inputs listed in Section 1?", "o": ["Shop loading and manpower availability", "Chip detector and screen particle findings", "Borescope results against AMM limits", "EDS new-engine SB embodiment status"], "e": "Shop loading/manpower is a Section 3 workscope planning factor, not one of the on-condition assessment items (removal reason, trends, events, BSI, chip detectors/screens, LLP life, EDS, SBs, ADs)."}, {"s": "General", "p": 14, "q": "Which transportation case is explicitly EXCLUDED from Abnormal Exposure?", "o": ["Attachment error with stand shock mounts still active", "Engine dropped while being moved between stands", "A fire that occurs while the engine is in transit", "Seawater contact while the engine is being shipped"], "e": "Damage during transportation counts, excluding suspension or attachment errors where the shock mounts on the transportation stand are still active."}, {"s": "General", "p": 14, "q": "A Chapter 05 critical part is deemed unserviceable under a Special Inspection Workscope. Which SB is it reported against?", "o": ["SB 71-0930", "SB 71-0005", "SB 72-0930", "SB 71-0001"], "e": "The part must be terminated and mutilated locally, and its P/N and S/N reported to CFM for inclusion in SB 71-0930 – Accident Involved Hardware."}, {"s": "General", "p": 14, "q": "Which of these is NOT considered Abnormal Exposure?", "o": ["Localized damage to a single removable part", "Fire exposure outside of the engine flowpath", "Partial submersion of the engine in mud", "Sudden rotor stoppage or excessive G-loads"], "e": "Abnormal Exposure excludes circumstances that clearly indicate very localized damage to a removable part with no over-limit conditions seen by the rest of the engine."}, {"s": "General", "p": 15, "q": "Following engine removal, which maintenance action makes the removal a shop visit?", "o": ["Removal of a disk, hub or spool", "Replacement of a gearbox module", "A top and bottom case procedure", "Replacing a module while on wing"], "e": "A shop visit entails a 360-degree separation of major mating flanges OR removal of a disk, hub or spool. Gearbox replacement, top/bottom case and on-wing module replacement are listed exceptions."}, {"s": "General", "p": 17, "q": "On average, today's LEAP PRSV workscopes recover EGT to within what range of the original average production Hot Day EGT?", "o": ["15 to 30 °C", "5 to 15 °C", "30 to 45 °C", "10 to 20 °C"], "e": "PRSVs demonstrate on average a recovery within 15-30 °C of original average production Hot Day EGT. It is a fleet average, not a minimum or guarantee for an individual engine."}, {"s": "General", "p": 16, "q": "In the PRSV definition table, what is the recommended maintenance for the HPT Rotor (SM52)?", "o": ["Replace Stage 1 and Stage 2 blades", "Replace Stage 1 and Stage 2 shrouds", "On-condition, exposed areas only", "Seal teeth repair of the CDP seal"], "e": "HPT Rotor (SM52): partial disassembly, replace Stage 1 & Stage 2 blades. Shroud replacement belongs to the HPT S2 Nozzle (SM53)."}, {"s": "General", "p": 16, "q": "In the PRSV definition table, what maintenance is recommended for the stationary CDP seal (piece part)?", "o": ["Honeycomb seal repair", "Seal teeth repair", "Full seal replacement", "On-condition only"], "e": "Stationary CDP seal: piece part inspection per ESM 72-41-02, honeycomb seal repair (equivalent level 3C). The rotating CDP seal gets seal teeth repair."}, {"s": "General", "p": 16, "q": "PRSV Note 1 says which inspection levels MUST NOT be assessed to the check inspection criteria of the ESM?", "o": ["Levels B and C", "Levels A and B", "Level C only", "Level A only"], "e": "Note 1: Inspection Levels B & C MUST NOT be assessed or accepted to any criteria listed in the check inspection sections of the ESM."}, {"s": "General", "p": 16, "q": "In the PRSV table, why is the HPT Stage 1 Nozzle (SM51) removed?", "o": ["To access the SM42 flowpath for visual inspection", "To replace all stage 1 shrouds as a complete set", "To restore HPT rotor blade tip clearances", "To overhaul the CDP stator seal honeycomb"], "e": "SM51 comment: 'Removed to access SM42 flowpath for Visual Inspection' (equivalent level 1B)."}, {"s": "General", "p": 17, "q": "Which SB category may be omitted at Quick Turn and Continued Time engine shop visits?", "o": ["Category 3", "Category 4", "Category 2", "Category 5"], "e": "Quick turn and continued time engine shop visits may omit category 3 service bulletins."}, {"s": "General", "p": 17, "q": "Which statement about Continued Time Engine Maintenance (CTEM) is correct?", "o": ["It may not increase scheduled time to the next shop visit", "It is always declared as a shop visit for reporting", "It must include all Category 3 SBs that are open", "It is limited to work that keeps all modules installed"], "e": "CTEM maintains the engine up to the LLP or expected performance SV and may not increase the scheduled time to the next SV. Whether it counts as an SV depends on disassembly level."}, {"s": "General", "p": 18, "q": "How is disassembly Level 02 defined?", "o": ["Partial disassembly – for cause", "Partial disassembly – for access", "As assembled – exposed areas only", "Full disassembly or module split"], "e": "Level 01: As Assembled. Level 02: Partial Disassembly – For Cause. Level 03: Full Disassembly or Split into Major/Minor Modules."}, {"s": "General", "p": 18, "q": "Inspection Level B refers to:", "o": ["ESM modular inspection per 72-00-XX", "Check inspection per ESM 72-00-00", "Piece-part inspection per 72-XX-YY", "AMM on-wing inspection per 72-00-00"], "e": "A = Check Inspection per 72-00-00; B = ESM Modular Inspection per 72-00-XX; C = ESM Piece Part Inspection per 72-XX-YY."}, {"s": "General", "p": 18, "q": "What is the workscoping intent when Level 03 disassembly and Level C inspection are both applied?", "o": ["The module is to be overhauled", "The module is to be continued time", "The module is repaired for cause", "The module is check-inspected only"], "e": "Note: When Level 03 disassembly and Level C inspection is applied the workscoping intent is for the module to be overhauled."}, {"s": "General", "p": 18, "q": "If the workscope gives no guidance, how should parts removed as unserviceable during a Level B inspection be handled?", "o": ["Inspected per Level C and repaired as necessary", "Re-inspected per Level A and returned to service", "Scrapped and replaced with new parts only", "Sent back to CFM for engineering disposition"], "e": "Footnote (1): CFM recommends parts removed as unserviceable during Level B inspection be inspected per Level C and repaired as necessary; replace parts that cannot be repaired."}, {"s": "General", "p": 19, "q": "For a Level B module requiring disassembly, when do piece-part coating removal, NDT and dimensional checks apply?", "o": ["Only when the visual exam raises a concern such as a crack", "Always, for every part removed for access from the module", "Only for parts that are listed in ESM Chapter 05 sections", "Never, since Level B is restricted to visual criteria only"], "e": "These piece-part checks are not applicable unless the visual module condition paragraph requires them because the visual examination drives a concern (crack suspicion, finding characterization). Note Chapter 05 parts still get mandatory inspections."}, {"s": "General", "p": 19, "q": "Which workscope code from the guide represents HPT rotor removal from the core with modular inspection of parts removed for access?", "o": ["MM02L02/B", "MM02L03/C", "SM52L03/C", "MM02L01/A"], "e": "Example: MM02L02/B SM52 HPT ROTOR Removal/Installation. SM52L03/C is HPT rotor full disassembly."}, {"s": "General", "p": 20, "q": "In the level-of-work tables, at which level is inspection Level C offered?", "o": ["Minor module tables only", "Engine level tables only", "Major module tables only", "All three level tables"], "e": "Engine and major-module tables offer only A and B. Level C (piece part per 72-XX-YY) appears with Level 03 at the minor-module level."}, {"s": "General", "p": 21, "q": "During a check inspection, which finding is NOT acceptable for continued time service and needs AMM/ESM inspection?", "o": ["A visible crack in a case or frame", "A finding within an AMM section limit", "A finding with ESM criteria but no AMM", "Surface deposit removed by wiping"], "e": "Findings on LLPs, bearings and visible cracks in cases/frames are considered not acceptable for continued time service."}, {"s": "General", "p": 21, "q": "What N2 vibration level does the guide cite as the test cell limit that may not have generated a CNR?", "o": ["1.2 ips", "1.0 ips", "1.5 ips", "0.8 ips"], "e": "N2 vibration exceeding the test cell limit of 1.2 ips may not have generated a CNR; fleet monitoring trends should be checked before workscope definition."}, {"s": "Engine Mgmt", "p": 27, "q": "Which stage count is correct for the LEAP-1A?", "o": ["3-stage booster, 10-stage HPC, 2-stage HPT, 7-stage LPT", "4-stage booster, 10-stage HPC, 2-stage HPT, 7-stage LPT", "3-stage booster, 9-stage HPC, 2-stage HPT, 7-stage LPT", "3-stage booster, 10-stage HPC, 2-stage HPT, 6-stage LPT"], "e": "Single-stage fan, 3-stage booster, 7-stage LPT, 10-stage HPC driven by a 2-stage HPT."}, {"s": "Engine Mgmt", "p": 27, "q": "How many blades are in the LEAP-1A fan stage?", "o": ["18", "24", "20", "22"], "e": "The Fan and Booster module consists of a fan stage of 18 blades and a 3-stage axial booster."}, {"s": "Engine Mgmt", "p": 28, "q": "How many blades does the LEAP-1A HPT have per stage?", "o": ["60 stage 1 and 68 stage 2", "68 stage 1 and 60 stage 2", "64 stage 1 and 72 stage 2", "56 stage 1 and 64 stage 2"], "e": "The HPT is a 2-stage turbine with 60 stage 1 blades and 68 stage 2 blades."}, {"s": "Engine Mgmt", "p": 28, "q": "The LEAP-1A combustion chamber assembly includes how many TAPS fuel nozzles and igniters?", "o": ["19 nozzles and 2 igniters", "18 nozzles and 2 igniters", "20 nozzles and 1 igniter", "24 nozzles and 2 igniters"], "e": "The combustion chamber assembly consists of 19 TAPS fuel nozzles, two igniters, dome, inner and outer liners, radial mixer and baffles."}, {"s": "Engine Mgmt", "p": 28, "q": "How are the HPC stage 6–10 rotor blades prevented from moving circumferentially?", "o": ["Two locking lugs on each blade", "A split retaining ring per stage", "Integral blisk construction", "Circumferential dovetail locks"], "e": "Stages 6 to 10 have axial dovetail slots; the blades are attached with two locking lugs to prevent circumferential movement. Stages 1-5 are blisks."}, {"s": "Engine Mgmt", "p": 28, "q": "The HPC front stator has IGVs plus how many VSV stages, and the rear stator how many fixed vane stages?", "o": ["4 VSV stages and 5 fixed stages", "5 VSV stages and 4 fixed stages", "3 VSV stages and 6 fixed stages", "4 VSV stages and 6 fixed stages"], "e": "Front stator: IGV + four stages of VSV in a case split at 3 and 9 o'clock. Rear stator: five stages of fixed compressor stator vanes."}, {"s": "Engine Mgmt", "p": 28, "q": "Which function is listed for the fan frame but NOT for the Turbine Rear Frame?", "o": ["Transmit powerplant thrust to the aircraft", "Support the engine within the nacelle", "Direct and ensure smooth aerodynamic flow", "Support the engine cowlings in service"], "e": "Fan frame: direct airflow, support engine, transmit thrust. TRF: support engine and cowlings, direct airflow. Only the fan frame transmits thrust."}, {"s": "Engine Mgmt", "p": 29, "q": "Which sump arrangement is correct for the LEAP-1A?", "o": ["A sump: No. 1–3; B sump: No. 4; C sump: No. 5", "A sump: No. 1–2; B sump: No. 3–4; C sump: No. 5", "A sump: No. 1–3; B sump: No. 4–5; C sump: none", "A sump: No. 1; B sump: No. 2–3; C sump: No. 4–5"], "e": "The A (forward) sump in the fan frame holds bearings 1, 2 and 3; the B sump holds No. 4; the C sump holds No. 5."}, {"s": "Engine Mgmt", "p": 29, "q": "Which sumps are vented to ambient pressure?", "o": ["The A sump only", "The B and C sumps", "All three sumps", "The C sump only"], "e": "The A sump is vented to ambient through front, rear and center vent tubes installed in the LPT shaft. The B and C sumps are not vented."}, {"s": "Engine Mgmt", "p": 30, "q": "Compared with the CFM56, the LEAP-1A No. 1 and No. 2 bearings are:", "o": ["No. 1 roller and No. 2 ball, swapped from CFM56", "No. 1 ball and No. 2 roller, the same as CFM56", "Both roller bearings with squeeze film dampers", "Both ball bearings with ceramic rolling elements"], "e": "#1 bearing: roller vs ball on CFM56. #2 bearing: ball vs roller on CFM56."}, {"s": "Engine Mgmt", "p": 30, "q": "Which LEAP-1A main bearing uses ceramic balls with a nitrided metallic race?", "o": ["No. 3", "No. 2", "No. 4", "No. 5"], "e": "#3 bearings: ceramic bearing ball, nitrided metallic race. The #3 roller damper was eliminated."}, {"s": "Engine Mgmt", "p": 32, "q": "What is the ultimate life target for HPC stage 1–5 blisks on the A321 application?", "o": ["17,500 cycles", "20,000 cycles", "30,000 cycles", "15,000 cycles"], "e": "Core LLPs: 20,000/17,500 cycles for A320/A321. So 17,500 for the A321."}, {"s": "Engine Mgmt", "p": 32, "q": "Which of these core-area parts carries a 30,000-cycle ultimate life target instead of 20,000/17,500?", "o": ["CDN and HPT casing", "HPT stage 2 disk", "CDP rotating seal", "Forward outer seal"], "e": "CDN, HPT Casing: 30,000 cycles. HPT disks, CDP seal and FOS are 20,000/17,500."}, {"s": "Engine Mgmt", "p": 33, "q": "Which LEAP core-protection feature sends the SMALLER particles out of the core flow?", "o": ["Inward-opening VBV doors", "Wide-chord fan blades", "Forward spinner geometry", "HPC blisk technology"], "e": "Spinner directs debris into bypass; wide-chord fan centrifuges large particles; inward-opening VBV scoops small particles into the bypass."}, {"s": "Engine Mgmt", "p": 34, "q": "According to the water wash guidance, when should detergent be added to the water?", "o": ["To remove organic or mineral deposits", "To reduce sand deposits on the airfoils", "To recover EGT margin after sand exposure", "To lower fuel burn after a long cruise"], "e": "Use pure water for sand reduction and performance recovery; use pure water and detergent to eliminate organic or mineral deposits (e.g., after bird strike)."}, {"s": "Engine Mgmt", "p": 34, "q": "Which criterion is NOT listed for choosing a water wash system?", "o": ["Purchase cost of the wash equipment", "Whether residues are collected or filtered", "Ease of use for the operator's own team", "Water going straight into the primary flowpath"], "e": "Listed criteria are Efficiency (water into primary flowpath), Environment (residue collection/filtering) and Process (ease of use). Cost is not listed."}, {"s": "Engine Mgmt", "p": 35, "q": "Which SB provides field conversion of LEAP-1A engine model / thrust rating?", "o": ["SB 72-0136", "SB 72-0085", "SB 72-0095", "SB 71-0006"], "e": "SB 72-0136, Engine Model/Thrust Rating Conversion, Category 7. 72-0095 is the new name plate SB."}, {"s": "Engine Mgmt", "p": 25, "q": "Which rating is listed for the A319neo only?", "o": ["1A23", "1A24", "1A26E1", "1A26CJ"], "e": "1A23 (22,900 lbf AET) and 1A24E1 appear only under A319neo. 1A24, 1A26E1 and 1A26/26CJ also appear for A320neo."}, {"s": "Engine Mgmt", "p": 36, "q": "What take-off derate is assumed in the Shop Visit Readiness scenarios?", "o": ["14 %", "10 %", "0 %", "20 %"], "e": "Average parameters: Flight leg 1.7 h/FC, OAT 70 °F (21 °C), derate Take-off 14 %, Cruise 0 %, Landing 10 %."}, {"s": "Engine Mgmt", "p": 37, "q": "In the LEAP-1A24 mature-engine scenario, what is the workscope at Shop Visit 2?", "o": ["Performance restoration with LP LLPs", "Performance restoration with HP LLPs", "Performance restoration with no LLPs", "Full overhaul with all LP and HP LLPs"], "e": "1A24: SV1 PR with HP LLPs (~17K CSN), SV2 PR with LP LLPs (~28K), SV3 PR with HP LLPs (removal cause LLPs, ~37K)."}, {"s": "Engine Mgmt", "p": 39, "q": "In the LEAP-1A30 scenario, at which shop visit are both LP and HP LLPs replaced?", "o": ["Shop visit 3, at about 30K CSN", "Shop visit 2, at about 23K CSN", "Shop visit 1, at about 13K CSN", "Shop visit 3, at about 37K CSN"], "e": "1A30: SV1 PR with HP LLPs (13K), SV2 PR without LLPs (23K), SV3 PR with LP & HP LLPs (30K)."}, {"s": "Workscopes", "p": 44, "q": "Which planning factor advises building on-wing entitlement to stagger future fleet shop visits?", "o": ["Engine distribution (TSV/CSV)", "LLP stub life criteria", "Shop loading and manpower", "Engine thrust and re-rating"], "e": "Engine Distribution (TSV/CSV): may need to build on-wing entitlement into engines to stagger fleet shop visit schedule in the future."}, {"s": "Workscopes", "p": 44, "q": "What does the 'LLP Stub Life Criteria' planning factor recommend?", "o": ["Match LLP lives across the engine or major module", "Replace every LLP that is past half of its life", "Keep at least one full LLP set in reserve stock", "Run each LLP to its limit before any replacement"], "e": "Be sure to 'match' LLP lives across the engine or major module to minimize exposure at the next shop visit."}, {"s": "Workscopes", "p": 45, "q": "In the workscoping flow chart, what follows when an unserviceable condition is found after disassembly?", "o": ["Revise the workscope", "Reject and troubleshoot", "Run the outgoing test", "Assemble the modules"], "e": "Unserviceable Condition / Workscope Creep leads to 'Revise Workscope', which loops back to 'Disassemble as required'."}, {"s": "Workscopes", "p": 47, "q": "Which engine test is specified for the HPT Module Repair example workscope?", "o": ["Test 002 Functional", "Test 003 Performance", "Test 001 Break-in", "Test 004 Vibration"], "e": "HPT Module Repair, Hot Section Repair, NSV, AGB and TGB repairs use Test 002 Functional. PRSV, Complete Core, Full Overhaul and Fan & LPT use Test 003 Performance."}, {"s": "Workscopes", "p": 48, "q": "What distinguishes the Hot Section (CC + HPT) Repair from the HPT Module Repair example?", "o": ["SM42 at Level 03 / Level C overhaul", "SM41 at Level 03 / Level C overhaul", "MM02 at Level 03 / Level C split", "SM52 at Level 03 / Level C overhaul"], "e": "Both share MM02 L02/A and SM51-56 L02/A; the Hot Section repair adds SM42 Combustion Chamber at Level 03 / Level C (Full Overhaul WS)."}, {"s": "Workscopes", "p": 49, "q": "In the PRSV example workscope, which minor module is partially disassembled to overhaul the CDP stator seal?", "o": ["SM41 Combustor diffuser nozzle", "SM30 HPC module assembly", "SM42 Combustion chamber assy", "SM51 Stage 1 HPT nozzle assy"], "e": "SM41 Level 02 / Level B: Partial Disassembly – Overhaul CDP Stator Seal. SM30 is partially disassembled to overhaul the CDP rotating seal."}, {"s": "Workscopes", "p": 49, "q": "In the PRSV example workscope, what minimum level is given for the core major module (MM02)?", "o": ["Level 02 / Level B", "Level 03 / Level C", "Level 02 / Level A", "Level 01 / Level B"], "e": "PRSV: MM02 CORE MAJOR MODULE, removal Yes, Level 02 / Level B, Partial Disassembly."}, {"s": "Workscopes", "p": 49, "q": "Which two PRSV minor modules are partially disassembled with the note 'Restore HPT Clearances'?", "o": ["SM52 HPT rotor and SM53 stage 2 HPT nozzle", "SM51 stage 1 HPT nozzle and SM52 HPT rotor", "SM53 stage 2 HPT nozzle and SM54 TCF", "SM52 HPT rotor and SM56 LPT stage 1 nozzle"], "e": "SM52 and SM53: Level 02 / Level B, Partial Disassembly – Restore HPT Clearances. SM51 and SM54 stay As Assembled (L01/B)."}, {"s": "Workscopes", "p": 52, "q": "In the 'Fan and LPT with all LLP' example, what minimum level applies to the core major module?", "o": ["Level 01 / Level A, as assembled", "Level 02 / Level A, partial", "Level 03 / Level C, split", "Level 02 / Level B, partial"], "e": "MM02 stays Level 01 / Level A (as assembled) while MM01 and MM03 are split to Level 03 / Level C."}, {"s": "Workscopes", "p": 53, "q": "The Non-Synchronous Vibration Repair workscope follows a CNR issued per which SB?", "o": ["SB 72-0509", "SB 72-0498", "SB 72-0352", "SB 72-0536"], "e": "Workscope designation: 'Non-Synchronous Vibration following CNR per SB 72-0509'."}, {"s": "Workscopes", "p": 53, "q": "In the NSV repair workscope, which fan-side minor module is partially disassembled?", "o": ["SM61 Inlet gearbox and No. 3 bearing", "SM22 No. 1 and No. 2 bearing support", "SM21 Fan and booster rotor module", "SM23 Fan case and acoustic panels"], "e": "NSV: SM61 Level 02 / Level A partial (with SM24 fan frame). SM21 and SM22 stay As Assembled; SM23 is not listed."}, {"s": "Workscopes", "p": 54, "q": "What engine-level disassembly does the AGB repair example workscope call for?", "o": ["Level 02 / Level A, AGB module removal", "Level 03 / Level A, split into majors", "Level 01 / Level A, as assembled", "Level 02 / Level B, AGB and TGB removal"], "e": "AGB Module Repair: MM00 Level 02 / Level A, Partial Disassembly – AGB module removal; SM63 Level 02 / Level A; Test 002."}, {"s": "Workscopes", "p": 51, "q": "Which example workscope sets the engine assembly (MM00) itself to Level 03 / Level C?", "o": ["Engine Full Overhaul with full LLP", "Complete Core with all Core LLP", "Fan and LPT with all LLP", "Performance Restoration Shop Visit"], "e": "Only the Full Overhaul lists MM00 Level 03 / Level C. The others list MM00 Level 03 / Level A."}, {"s": "Service Bulletins", "p": 57, "q": "How should the SB lists in the LEAP Maintenance Guide be treated?", "o": ["As recommendations, not added requirements to the AMP", "As requirements added to the operator's approved plan", "As a complete list replacing the ESM SB index", "As mandatory items at every performance shop visit"], "e": "They are RECOMMENDATIONS ONLY and should NOT be interpreted as requirements in addition to those in the operator's Approved Maintenance Plan. The list is not all-inclusive."}, {"s": "Service Bulletins", "p": 57, "q": "SB Category 1 usually corresponds to:", "o": ["Compliance mandated by an AD, NPRM or pending AD", "CFM technical reasons, as soon as possible", "Compliance at the next engine or module shop visit", "Compliance whenever the affected area is exposed"], "e": "Category 1: mandatory, generally as a result of EASA or FAA action (AD, NPRM, pending AD). Category 2 is for CFM technical reasons."}, {"s": "Service Bulletins", "p": 58, "q": "Category 5 Service Bulletins should be done when:", "o": ["The affected part is removed at piece-part level", "The affected part is routed for a planned repair", "The affected area is exposed during a shop visit", "The engine or module has its next shop visit"], "e": "Cat 4: when the area is exposed. Cat 5: as soon as the affected part is removed (piece-part level). Cat 6: when the part is routed for repair. Cat 3: next shop visit."}, {"s": "Service Bulletins", "p": 58, "q": "An SB to be done 'when the affected part is routed for repair' belongs to which category?", "o": ["Category 6", "Category 5", "Category 4", "Category 7"], "e": "Category 6: CFM recommends that you do this SB when the affected part is routed for repair."}, {"s": "Service Bulletins", "p": 58, "q": "For SBs with CFM cost participation, what are the two sections of the compliance paragraph?", "o": ["Technical Compliance and Program Support", "Technical Compliance and Labor Estimate", "Program Support and Material Availability", "Impact Statement and Program Support"], "e": "Technical Compliance (categories plus CFM statement, end dates on technical grounds only) and an optional Program Support section with financial participation data."}, {"s": "Service Bulletins", "p": 59, "q": "SB impact letter B addresses a condition that may result in:", "o": ["More IFSDs, take-off aborts, air turn-backs or diversions", "A condition that may directly affect flight safety", "Unscheduled removals or aircraft on ground events", "Delays and cancellations in day-to-day operation"], "e": "A = flight safety; B = IFSD, TOA, ATB, DIV; C = non-event disruption, UER, out-station removals, AOG; D = delays and cancellations."}, {"s": "Service Bulletins", "p": 60, "q": "Together, SBs 72-0034, 72-0035 and 72-0036 lower the engine leak-free start temperature to:", "o": ["−40 °F (−40.0 °C)", "−20 °F (−28.9 °C)", "−31 °F (−35.0 °C)", "−58 °F (−50.0 °C)"], "e": "The new hydraulic fuel manifolds lower the leak-free start temperature from −20 °F (−28.9 °C) to −40 °F (−40.0 °C)."}, {"s": "Service Bulletins", "p": 127, "q": "Applying which SB terminates the repetitive LPT stage 1 interlock gap BSI of SB 72-0151?", "o": ["SB 72-0412", "SB 72-0406", "SB 72-0130", "SB 72-0188"], "e": "SB 72-0412 introduces the new 21-sector LPT stage 1 retainer ring; applying it terminates the inspection requirements of SB 72-0151 (BSI before 1600 FC then every 1600 FC)."}, {"s": "Service Bulletins", "p": 62, "q": "For an engine above 1,100 hours TSN, SB 72-0159 (TGB and outer RDS replacement) asks for compliance within:", "o": ["100 hours", "1,100 hours", "500 hours", "1,600 cycles"], "e": "Below 1100 h TSN: as soon as possible without effect on revenue service. Above 1100 h TSN: within 100 hours."}, {"s": "Service Bulletins", "p": 61, "q": "Besides the stage 2 and 4 VSV seal J-hooks, the SB 72-0144 BSI is used as an indicator of wear on:", "o": ["The VSV inner trunnion sleeve", "The stage 6–10 locking lugs", "The IGV bell crank master rod", "The VSV stage 2 shroud pins"], "e": "The inspection is also used as an indicator of wear on the VSV inner trunnion sleeve, which is not visible through a BSI."}, {"s": "Service Bulletins", "p": 112, "q": "Which of these HPT rotor SBs is Category 1?", "o": ["SB 72-0167, stage 2 disk inspection", "SB 72-0413, removal of reduced-life LLPs", "SB 72-0405, stage 2 disk immersion UT", "SB 72-0446, forward outer seal replacement"], "e": "SB 72-0167 (remove/inspect/replace HPT stage 2 disk P/N 2466M52G03 before 1200 cycles) is Category 1, impact A. The others are impact A but Category 2 or 5."}, {"s": "Service Bulletins", "p": 97, "q": "SB 72-0398 (IGV–stage 1 bell crank to master rod joint) must be repeated:", "o": ["At every core module shop visit, including quick turns", "Every 1,600 flight cycles on wing until terminated", "Once only, at the first core module shop visit", "At every performance restoration shop visit only"], "e": "This SB has to be repeated at every shop visit of the core module assembly, including quick turns."}, {"s": "Service Bulletins", "p": 108, "q": "When may the SB 72-0076 leading-indicator BSI of L605 combustor retainers be done?", "o": ["During a quick turn with the HPT nozzle removed", "On wing through the combustor borescope ports", "At any shop visit with the fuel nozzles removed", "Only at full overhaul with the combustor split"], "e": "Only if the combustor module is exposed during an engine quick turn with the HPT nozzle assembly removed; it should not be performed on wing. (Removed fuel nozzles is the condition for SB 72-0372.)"}, {"s": "Service Bulletins", "p": 112, "q": "What alternative does SB 72-0439 allow for the forward outer seal at a CTEM shop visit?", "o": ["A GVI in place of the Chapter 05 FPI", "An eddy current check in place of FPI", "An FPI in place of the immersion UT", "A BSI in place of the piece-part GVI"], "e": "SB 72-0439 (Cat 7, F): GVI as an alternate to the ESM Chapter 05 FPI of the FOS after disassembly from the stage 1 disk during stage 1 blade replacement at a CTEM SV."}, {"s": "Service Bulletins", "p": 113, "q": "SB 72-0525 removes from service HPT rotor interstage seals whose serial numbers start with:", "o": ["WES", "GCJ", "HUA", "WTS"], "e": "SB 72-0525 lists all HPT rotor interstage seal serial numbers starting with WES. 'GCJ' is the No. 3 bearing spring finger housing supplier in SB 72-0562."}, {"s": "Service Bulletins", "p": 119, "q": "SB 72-0172 replaces the No. 4 bearing support housing when the TCF is exposed for which workscopes?", "o": ["Performance or full overhaul", "Any quick turn or CTEM visit", "Hot section repair only", "NSV repair after a CNR"], "e": "Replace old housing P/N 2461M52G03 with P/N 2461M77G01 when the TCF is exposed for performance or full overhaul workscope (Category 4)."}, {"s": "Service Bulletins", "p": 69, "q": "Which EEC software release is noted for fixes to delayed light-off conditions?", "o": ["FCS 7.0 (SB 73-0045)", "FCS 6.0 (SB 73-0034)", "FCS 5.7 (SB 73-0028)", "FCS 8.5 (SB 73-0050)"], "e": "SB 73-0045 releases FCS 7.0 with several improvements, including fixes for delayed light off conditions."}, {"s": "Service Bulletins", "p": 68, "q": "OMAP FADEC software HL1A0340 is only compatible with which EEC?", "o": ["EEC VIN 115E6331G5, post-SB 73-0010", "EEC VIN 115E6331G4, pre-SB 73-0010", "EEC VIN 115E6331G5, pre-SB 73-0031", "Any EEC part number in the fleet"], "e": "HL1A0330 is only for VIN 115E6331G4 (pre-73-0010); HL1A0340 is only for VIN 115E6331G5 (post-73-0010). FADEC and PHM main software is compatible with all EECs."}, {"s": "Service Bulletins", "p": 78, "q": "What is the purpose of the Reverse Bleed System introduced by SBs 72-0444 and 72-0445?", "o": ["Reducing on-wing fuel nozzle coking", "Reducing NSV from No. 3 bearing wear", "Improving HPT blade cooling at take-off", "Lowering the leak-free cold start limit"], "e": "72-0444 (phase 1 of 2) relocates external hardware to be RBS-enabled; 72-0445 (phase 2) introduces the RBS to mitigate on-wing fuel nozzle coking."}, {"s": "Service Bulletins", "p": 66, "q": "At shop incoming, which modules should receive a borescope inspection per AMM?", "o": ["Modules expected not to be exposed at the shop visit", "Modules planned for full Level C overhaul at the visit", "Only the HPT and combustor, whatever the workscope", "Only modules carrying an open Category 3 bulletin"], "e": "At shop incoming, perform a BSI per AMM of modules expected to be not exposed during the Shop Visit; BSI SBs can then be applied per customer decision."}, {"s": "Service Bulletins", "p": 67, "q": "SB 72-0372 (cold side domeplate cooling holes BSI) should only be done:", "o": ["At quick turn or shop visit with fuel nozzles removed", "On wing through the four combustion case ports", "At shop visit with the HPT stage 1 nozzle removed", "At full overhaul with the combustor at piece part"], "e": "This BSI should only be accomplished during an engine quick turn or shop visit with the combustor fuel injection nozzles removed."}, {"s": "Key Tasks", "p": 80, "q": "During shop visit oil-leak prevention, what indicates the Oil Eductor Valve should be tested or repaired?", "o": ["The pop-out is closed and 'OPEN' cannot be read", "The pop-out is extended and shows 'OPEN' clearly", "Oil coke is found on the turbine rear ventilation", "The valve fails a visual check for external leaks"], "e": "If coking is present, inspect the eductor air valve pop-out window; if closed and you cannot read 'OPEN', the Oil Eductor Valve should be tested or repaired."}, {"s": "Key Tasks", "p": 83, "q": "In fan-module oil leak prevention, which SB applies if O-ring P/N 364-508-701-0 (SIN 815N1) at the sump flange is removed or leaking?", "o": ["SB 72-0331", "SB 72-0236", "SB 72-0326", "SB 72-0540"], "e": "Apply SB 72-0331 (new O-ring) for sump flange leakage. SB 72-0236 covers bearing pressurization tubes at tube interfaces."}, {"s": "Key Tasks", "p": 83, "q": "What triggers the fan major module oil-leak inspection sequence?", "o": ["A-sump drain activity or unexplained oil in the booster", "C-sump drain activity reported during on-wing checks", "High N2 vibration trend reported by fleet monitoring", "Oil coke found on the B-sump during core exposure"], "e": "Triggered in case of reported A-sump drain activity on-wing, or oil traces in booster flowpath unexplained by previous inspections."}, {"s": "Key Tasks", "p": 98, "q": "For B-sump oil leak prevention at core level, when should the seal runner (SIN 16203) be replaced?", "o": ["If it shows scratches or uneven circumferential wear", "Always, whenever the B-sump is exposed at a visit", "Only if the No. 4 carbon seal fails its flow check", "Only if oil coke cannot be removed by cleaning"], "e": "Seal runner: replace if detectable scratches or uneven wear patterns circumferentially. The preformed packing (16251) is always replaced; the No. 4 stationary oil seal is repaired or replaced."}, {"s": "Key Tasks", "p": 119, "q": "If coking is found inside the B-sump, what additional check does the TCF key task call for?", "o": ["A BSI of both TCF scavenge tubes", "A flow check of the No. 5 carbon seal", "A test of the oil eductor valve", "An FPI of the No. 4 bearing housing"], "e": "A BSI of both TCF scavenge tubes confirms no coke blockage that could impede scavenge flow and lead to sump pressurization or leakage."}, {"s": "Key Tasks", "p": 123, "q": "During LPT removal with C-sump drain activity reported on wing, what should be performed?", "o": ["A No. 5 carbon seal flow check", "A No. 1 carbon seal flow check", "A No. 3 carbon seal flow check", "A No. 4 carbon seal flow check"], "e": "If C-sump drain activity is reported, perform the #5 carbon seal flow check per ESM 72-00-00-C9A-710A-C; replace it if coked or the flow check fails."}, {"s": "Key Tasks", "p": 102, "q": "To control N2 vibration when the HPC rotor is exposed, what target applies to stage 6–10 blade Clearance R?", "o": ["The smallest clearance possible", "The mid-point of the limits", "The largest clearance allowed", "The clearance from the last visit"], "e": "Ensure Stg 6-10 blade Clearance R is within limits. Note: target the smallest clearance possible."}, {"s": "Key Tasks", "p": 114, "q": "In the HPT rotor final balance for N2 vibration, correction weights should be eliminated or minimized in which plane?", "o": ["The forward plane (Plane BE)", "The aft correction plane", "The stage 2 retainer plane", "Both planes, split equally"], "e": "Eliminate or minimize correction weights in the FWD plane (Plane BE); reduce static imbalance using the AFT plane only if possible."}, {"s": "Key Tasks", "p": 114, "q": "If the forward outer seal (FOS) is removed, what does CFM recommend for the HPT rotor?", "o": ["A pre-grind balance using stage 1 blades", "A pre-grind balance using stage 2 blades", "A runout of the CDP seal and No. 3 journal", "A match-mark of the stage 1 blade retainer"], "e": "Note: If FOS is removed CFM recommends a pre-grind balance using S1 blades. Match-marking applies to the S2 blade retainer."}, {"s": "C&A", "p": 137, "q": "Which C&A workscope level applies during Continued Time Engine Maintenance?", "o": ["Level 00: Check inspection", "Level 01: Minimum workscope", "Level 02: Bench test per CMM", "Level 03: Overhaul per CMM"], "e": "Level 00 Check Inspection is for CTEM, with C&A installed or removed for access, per ESM 72-00-00 Check inspection."}, {"s": "C&A", "p": 138, "q": "Which C&A level means cleaning, inspecting and repairing per CMM WITHOUT full disassembly?", "o": ["Level 02: Bench test per CMM", "Level 03: Overhaul per CMM", "Level 01: Minimum workscope", "Level 00: Check inspection"], "e": "Level 02: cleaned, inspected and repaired or modified as required, without full disassembly. Level 03 requires full disassembly."}, {"s": "C&A", "p": 138, "q": "Where a C&A maintenance threshold is defined, the threshold counter is reset to zero when the unit is:", "o": ["Overhauled per the applicable CMM", "Bench tested per the applicable CMM", "Check inspected at a shop visit", "Removed for access and re-installed"], "e": "The threshold counter is reset to zero when the C&A unit is overhauled per the applicable CMM. Currently all C&A maintenance is on condition."}, {"s": "C&A", "p": 145, "q": "In C&A Workscope B (planned shop visit), which two items are removed and set to Level 02 bench test per CMM?", "o": ["Fuel nozzles and T48 EGT sensor harness", "Fuel nozzles and the oil eductor valve", "T48 EGT sensors and T48 sensor harness", "Main fuel pump and fuel metering unit"], "e": "WS B: Fuel Nozzle (73-11-30) and T48 EGT sensor harness (77-21-05) are removed Yes at Level 02. T48 sensors and the eductor valve are removed at Level 01 with a specific test."}, {"s": "C&A", "p": 140, "q": "When is the IDG oil cooler escalated to Level 02 per MPD-242100-20-1?", "o": ["MO > 252 or FH > 36,000", "MO > 36 or FH > 25,200", "FH > 25,200 or FC > 3,600", "MO > 120 or FH > 18,000"], "e": "IDG oil cooler (73-11-50): Level 02 per MPD-242100-20-1 if MO > 252 or FH > 36,000."}, {"s": "C&A", "p": 222, "q": "Per the engine kit overview, which item is non-replaceable on wing and accessed for troubleshooting only?", "o": ["No. 1 bearing accelerometer", "TCF vibration accelerometer", "N1 speed sensor probe", "T25 temperature sensor"], "e": "The No. 1 Bearing Accelerometer (shroud segment 1 o'clock) is non-replaceable on-wing, for troubleshooting only."}];
+const SECTIONS = ["General","Engine Mgmt","Workscopes","Service Bulletins","Key Tasks","C&A"];
+const SECTION_NAMES = {"General":"General maintenance","Engine Mgmt":"Engine management","Workscopes":"Workscopes digest","Service Bulletins":"Service bulletins","Key Tasks":"Key maintenance tasks","C&A":"Controls & accessories"};
+QUESTIONS.forEach((q,i)=>q.id=i+1);
+
+const $ = id => document.getElementById(id);
+const store = {
+  get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let selected = new Set(SECTIONS);
+let state = null; // {items:[{id, order:[...], pick:null}], idx}
+
+function renderChips(){
+  const c=$("chips"); c.innerHTML="";
+  const all=document.createElement("button");
+  all.className="chip"; all.type="button";
+  all.setAttribute("aria-pressed", selected.size===SECTIONS.length);
+  all.innerHTML=`All <span class="n">${QUESTIONS.length}</span>`;
+  all.onclick=()=>{selected = selected.size===SECTIONS.length ? new Set() : new Set(SECTIONS); renderChips()};
+  c.appendChild(all);
+  SECTIONS.forEach(s=>{
+    const b=document.createElement("button");
+    b.className="chip"; b.type="button";
+    b.setAttribute("aria-pressed", selected.has(s));
+    b.innerHTML=`${SECTION_NAMES[s]} <span class="n">${QUESTIONS.filter(q=>q.s===s).length}</span>`;
+    b.onclick=()=>{selected.has(s)?selected.delete(s):selected.add(s); renderChips()};
+    c.appendChild(b);
+  });
+  const n=QUESTIONS.filter(q=>selected.has(q.s)).length;
+  $("startBtn").disabled = n===0;
+  $("startBtn").textContent = n? `Start new quiz (${n})` : "Pick a section";
+}
+
+function begin(ids){
+  if($("shuffleQ").checked) ids=shuffle(ids);
+  state={items:ids.map(id=>({id,order:shuffle([0,1,2,3]),pick:null})),idx:0};
+  save(); show();
+}
+function save(){store.set("leap1a-quiz-v1",state)}
+
+function show(){
+  $("results").hidden=true;
+  $("quiz").hidden=false; $("strip").hidden=false; $("navPanel").hidden=false;
+  render();
+}
+
+function render(){
+  const it=state.items[state.idx], q=QUESTIONS[it.id-1];
+  $("qTag").textContent=SECTION_NAMES[q.s];
+  $("qId").textContent=`Q${String(q.id).padStart(3,"0")}`;
+  $("qText").textContent=q.q;
+  const ul=$("opts"); ul.innerHTML="";
+  const answered = it.pick!==null;
+  it.order.forEach((oi,pos)=>{
+    const li=document.createElement("li");
+    const b=document.createElement("button");
+    b.type="button"; b.className="opt"; b.id=`opt-${pos}`;
+    let mark="";
+    if(answered){
+      b.disabled=true;
+      if(oi===0){b.classList.add("correct"); mark="Correct"}
+      else if(oi===it.pick){b.classList.add("wrong"); mark="Your answer"}
+      else b.classList.add("dim");
+    }
+    b.innerHTML=`<span class="k">${"ABCD"[pos]}</span><span class="t"></span><span class="m">${mark}</span>`;
+    b.querySelector(".t").textContent=q.o[oi];
+    b.onclick=()=>answer(oi);
+    li.appendChild(b); ul.appendChild(li);
+  });
+  const ex=$("explain");
+  if(answered){
+    ex.hidden=false;
+    const ok=it.pick===0;
+    $("verdict").textContent= ok? "Correct." : "Not quite.";
+    $("verdict").className="verdict "+(ok?"ok":"bad");
+    $("expText").textContent=q.e;
+    $("ref").textContent=`Source: LEAP-1A MG Rev 04, page ${q.p} of 222`;
+  } else ex.hidden=true;
+  $("prevBtn").disabled = state.idx===0;
+  $("nextBtn").textContent = state.idx===state.items.length-1 ? "See results" : "Next";
+  updateStats(); renderGrid();
+}
+
+function answer(oi){
+  const it=state.items[state.idx];
+  if(it.pick!==null) return;
+  it.pick=oi; save(); render();
+  $("nextBtn").focus({preventScroll:true});
+}
+
+function updateStats(){
+  const tot=state.items.length;
+  const ok=state.items.filter(i=>i.pick===0).length;
+  const bad=state.items.filter(i=>i.pick!==null&&i.pick!==0).length;
+  $("sNum").textContent=state.idx+1; $("sTot").textContent=tot;
+  $("sOk").textContent=ok; $("sBad").textContent=bad;
+  $("sPct").textContent=(ok+bad)? Math.round(100*ok/(ok+bad))+"%" : "–";
+  $("barG").style.width=(100*ok/tot)+"%"; $("barR").style.width=(100*bad/tot)+"%";
+}
+
+function renderGrid(){
+  const g=$("grid"); g.innerHTML="";
+  state.items.forEach((it,i)=>{
+    const d=document.createElement("button");
+    d.type="button"; d.className="dot"; d.textContent=i+1;
+    d.setAttribute("aria-label",`Question ${i+1}`);
+    if(it.pick===0) d.classList.add("g"); else if(it.pick!==null) d.classList.add("r");
+    if(i===state.idx) d.classList.add("cur");
+    d.onclick=()=>{state.idx=i; save(); render()};
+    g.appendChild(d);
+  });
+}
+
+function go(d){
+  const n=state.idx+d;
+  if(n>=state.items.length){finish();return}
+  if(n<0) return;
+  state.idx=n; save(); render();
+  $("quiz").scrollIntoView({block:"nearest"});
+}
+
+function finish(){
+  $("quiz").hidden=true; $("strip").hidden=true; $("navPanel").hidden=true; $("results").hidden=false;
+  const items=state.items, tot=items.length;
+  const ok=items.filter(i=>i.pick===0).length;
+  const skipped=items.filter(i=>i.pick===null).length;
+  $("score").innerHTML=`${ok} <small>/ ${tot} correct${skipped?` · ${skipped} unanswered`:""}</small>`;
+  const rows=SECTIONS.map(s=>{
+    const sub=items.filter(i=>QUESTIONS[i.id-1].s===s); if(!sub.length) return "";
+    const c=sub.filter(i=>i.pick===0).length;
+    return `<tr><td>${SECTION_NAMES[s]}</td><td class="num">${c} / ${sub.length}</td><td class="num">${Math.round(100*c/sub.length)}%</td></tr>`;
+  }).join("");
+  $("secTable").innerHTML=`<thead><tr><th>Section</th><th class="num">Score</th><th class="num">%</th></tr></thead><tbody>${rows}</tbody>`;
+  const miss=items.filter(i=>i.pick!==0);
+  $("retryMissed").disabled=!miss.length;
+  $("missedLabel").textContent= miss.length? `Missed or unanswered (${miss.length})` : "No misses. Every answer was correct.";
+  const ul=$("missed"); ul.innerHTML="";
+  miss.forEach(it=>{
+    const q=QUESTIONS[it.id-1];
+    const li=document.createElement("li");
+    li.innerHTML=`<div class="ref"></div><div class="qq"></div><div class="yours"></div><div class="right"></div>`;
+    li.children[0].textContent=`Q${String(q.id).padStart(3,"0")} · ${SECTION_NAMES[q.s]} · page ${q.p}`;
+    li.children[1].textContent=q.q;
+    li.children[2].textContent= it.pick===null? "Not answered" : "Your answer: "+q.o[it.pick];
+    li.children[3].textContent="Correct: "+q.o[0];
+    ul.appendChild(li);
+  });
+  $("results").scrollIntoView({block:"start"});
+}
+
+$("startBtn").onclick=()=>begin(QUESTIONS.filter(q=>selected.has(q.s)).map(q=>q.id));
+$("nextBtn").onclick=()=>go(1);
+$("prevBtn").onclick=()=>go(-1);
+$("finishBtn").onclick=finish;
+$("restartBtn").onclick=()=>{state=null; store.set("leap1a-quiz-v1",null); $("results").hidden=true; $("setup").scrollIntoView({block:"start"})};
+$("retryMissed").onclick=()=>begin(state.items.filter(i=>i.pick!==0).map(i=>i.id));
+
+document.addEventListener("keydown",e=>{
+  if(!state || $("quiz").hidden || e.metaKey||e.ctrlKey||e.altKey) return;
+  const k=e.key.toLowerCase();
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  if(k in map){const it=state.items[state.idx]; if(it.pick===null){answer(it.order[map[k]]); e.preventDefault()}}
+  else if(k==="enter"||k==="arrowright"){ if(k==="enter" && document.activeElement && document.activeElement.tagName==="BUTTON") return; go(1); e.preventDefault()}
+  else if(k==="arrowleft"){go(-1); e.preventDefault()}
+});
+
+renderChips();
+const saved=store.get("leap1a-quiz-v1");
+if(saved && saved.items && saved.items.length && saved.items.every(i=>QUESTIONS[i.id-1])){state=saved; show()}
+else {
+  // Open on a ready-to-answer first question so the page is useful at a glance.
+  begin(QUESTIONS.map(q=>q.id));
+}
+</script>
